@@ -1,6 +1,8 @@
 module Main (main) where
 
 import Lib 
+import System.Random (randomRIO)
+
 
 -- https://hackage.haskell.org/package/base-4.20.0.1/docs/Data-String.html#v:words
 -- https://www.ime.usp.br/~pf/dicios/
@@ -8,9 +10,12 @@ import Lib
 main :: IO ()
 main = do
   contents <- readFile "br-sem-acentos.txt"
-  let words_ = words contents
-  let a = mapWords words_
-  let b = takeWordListOfSize a 3
-  let size = legnthWords b
-  let word = takeWordAt b 10
+  let a = map countLetters (words contents)
+  input <- getLine
+  let number = read input :: Int
+  let b = listWordsOfSize a number
+  let size = length b
+  randomNumber <- randomRIO (1, size)
+  let word = takeWordAt b randomNumber
   print word
+  print (matchLetters 'c' "carro")

@@ -1,32 +1,48 @@
 module Lib
-    ( WordParam(..)
-    , legnthWords
-    , takeWordAt
-    , takeWordListOfSize
-    , countLetters
-    , mapWords
-    , someFunc
-    ) where
-
-import System.Random (randomRIO)
+  ( WordParam (..),
+    legnthWords,
+    takeWordAt,
+    listWordsOfSize,
+    countLetters,
+    someFunc,
+    matchLetters,
+  )
+where
 
 data WordParam = WordParam String Int deriving (Show)
 
+instance Semigroup WordParam where
+  (WordParam w1 l1) <> (WordParam w2 l2) = WordParam (w1 ++ w2) (l1 + l2)
+
+instance Monoid WordParam where
+  mempty = WordParam "" 0
+
 legnthWords :: [WordParam] -> Int
 legnthWords [] = 0
-legnthWords xs = 1 + legnthWords(tail xs)
+legnthWords xs = legnthWords (tail xs)
 
-takeWordAt :: [WordParam] -> Int -> WordParam
-takeWordAt words_ n = (words_ !! n)
+takeWordAt :: [WordParam] -> Int -> String
+takeWordAt words_ n = w
+  where
+    WordParam w _l = words_ !! n
 
-takeWordListOfSize :: [WordParam] -> Int -> [WordParam]
-takeWordListOfSize words_ n = filter (\(WordParam _ l) -> l == n) words_
+listWordsOfSize :: [WordParam] -> Int -> [WordParam]
+listWordsOfSize words_ n = filter (\(WordParam _ l) -> l == n) words_
 
 countLetters :: String -> WordParam
 countLetters s = WordParam s (length s)
 
-mapWords :: [String] -> [WordParam]
-mapWords s = map countLetters s
-
 someFunc :: IO ()
 someFunc = putStrLn "someFunc"
+
+letterInWord :: Char -> String -> Bool
+letterInWord c w
+  | c == head w = True
+  | letterInWord c (tail w) = True
+  | otherwise = False
+
+matchLetters :: Char -> String -> Char
+matchLetters c w
+  | c == head w = 'G'
+  | letterInWord c (tail w) = 'Y'
+  | otherwise = 'R'
