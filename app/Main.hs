@@ -19,3 +19,4 @@ main = do
   let word = takeWordAt b randomNumber
   print word
   print (matchLetters 'c' "carro")
+  print (matchWords "carro" "carro")

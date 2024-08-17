@@ -6,6 +6,7 @@ module Lib
     countLetters,
     someFunc,
     matchLetters,
+    matchWords,
   )
 where
 
@@ -41,8 +42,12 @@ letterInWord c w
   | letterInWord c (tail w) = True
   | otherwise = False
 
-matchLetters :: Char -> String -> Char
+matchLetters :: Char -> String -> String
 matchLetters c w
-  | c == head w = 'G'
-  | letterInWord c (tail w) = 'Y'
-  | otherwise = 'R'
+  | c == head w = "G"
+  | letterInWord c (tail w) = "Y"
+  | otherwise = "R"
+
+matchWords :: String -> String -> String
+matchWords [] _w2 = []
+matchWords w w2 = (matchLetters (head w) w2) ++ matchWords (tail w) (tail w2)
