@@ -9,4 +9,4 @@ import Lib
 main :: IO ()
 main = do
   word <- gameStart
-  gameLoop 5 word
+  gameLoop 5 "pares"
