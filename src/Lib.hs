@@ -7,8 +7,10 @@ module Lib
     someFunc,
     matchLetters,
     matchWords,
+    gameLoop,
   )
 where
+import Data.Foldable (sequenceA_)
 
 data WordParam = WordParam String Int deriving (Show)
 
@@ -37,12 +39,14 @@ someFunc :: IO ()
 someFunc = putStrLn "someFunc"
 
 letterInWord :: Char -> String -> Bool
+letterInWord _c [] = False
 letterInWord c w
   | c == head w = True
   | letterInWord c (tail w) = True
   | otherwise = False
 
 matchLetters :: Char -> String -> String
+matchLetters _c [] = "R"
 matchLetters c w
   | c == head w = "G"
   | letterInWord c (tail w) = "Y"
@@ -50,4 +54,27 @@ matchLetters c w
 
 matchWords :: String -> String -> String
 matchWords [] _w2 = []
+matchWords _w1 [] = []
 matchWords w w2 = (matchLetters (head w) w2) ++ matchWords (tail w) (tail w2)
+
+checkWin :: String -> Bool
+checkWin [] = True
+checkWin s = (head s == 'G') && checkWin (tail s)
+
+gameLoop :: Int -> String -> IO ()
+gameLoop 0 s = do
+    print s
+    putStrLn "Game Over"
+gameLoop l s = do
+    print "Insira a palavra"
+    input2 <- getLine
+    let guess = input2
+    let matches = matchWords guess s
+    let result = checkWin matches
+    print matches
+    case result of
+        True ->  do
+            print s
+            putStrLn "Win"
+        False -> gameLoop (l-1) s
+    
