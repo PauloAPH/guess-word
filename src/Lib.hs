@@ -8,9 +8,11 @@ module Lib
     matchLetters,
     matchWords,
     gameLoop,
+    gameStart,
   )
 where
-import Data.Foldable (sequenceA_)
+
+import System.Random (randomRIO)
 
 data WordParam = WordParam String Int deriving (Show)
 
@@ -55,7 +57,7 @@ matchLetters c w
 matchWords :: String -> String -> String
 matchWords [] _w2 = []
 matchWords _w1 [] = []
-matchWords w w2 = (matchLetters (head w) w2) ++ matchWords (tail w) (tail w2)
+matchWords w w2 = matchLetters (head w) w2 ++ matchWords (tail w) (tail w2)
 
 checkWin :: String -> Bool
 checkWin [] = True
@@ -77,4 +79,16 @@ gameLoop l s = do
             print s
             putStrLn "Win"
         False -> gameLoop (l-1) s
-    
+
+gameStart ::  IO String
+gameStart = do
+    contents <- readFile "br-sem-acentos.txt"
+    let a = map countLetters (words contents)
+    print "Entre com a quantidade de letras"
+    input <- getLine
+    let number = read input :: Int
+    let b = listWordsOfSize a number
+    let size = length b
+    randomNumber <- randomRIO (1, size)
+    let word = takeWordAt b randomNumber
+    return word
