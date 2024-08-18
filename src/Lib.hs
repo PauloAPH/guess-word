@@ -6,6 +6,7 @@ module Lib
     countLetters,
     someFunc,
     matchWords,
+    letterInWord,
     gameLoop,
     gameStart,
   )
