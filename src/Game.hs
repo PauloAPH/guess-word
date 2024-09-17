@@ -11,6 +11,7 @@ where
 import Lib
 import Control.Monad.State
 import System.Random
+import Data.Fixed (div')
 
 data GameState = GameState
   { tentativas :: Int,
@@ -23,8 +24,14 @@ type Jogo a = State GameState a
 eval :: State s a -> s -> a
 eval st = fst . runState st
 
-criaJogo :: String -> GameState
-criaJogo _ = GameState 5 5 "Teste"
+criaJogo :: Int -> String -> GameState
+criaJogo size contents = GameState t size word where 
+  t = length b `div` size where 
+    b = listWordsOfSize a size where
+      a = map countLetters (words contents)
+  word = takeWordAt b 6 where 
+    b = listWordsOfSize a size where
+      a = map countLetters (words contents)
 
 getPalavra :: Jogo String
 getPalavra = do
