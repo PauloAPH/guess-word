@@ -1,14 +1,55 @@
 module Game
   ( gameLoop,
     gameStart,
+    getPalavra,
+    criaJogo,
+    GameState,
+    eval,
   )
 where
 
 import Lib
-import System.Random (randomRIO)
+import Control.Monad.State
+import System.Random
 
--- GameState Tentativas Tamanho Palavra
-data GameState = GameState Int Int String deriving(Show)
+data GameState = GameState
+  { tentativas :: Int,
+    tamanho_da_palavra :: Int,
+    palavra :: String
+  } deriving Show
+
+type Jogo a = State GameState a
+
+eval :: State s a -> s -> a
+eval st = fst . runState st
+
+criaJogo :: String -> GameState
+criaJogo _ = GameState 5 5 "Teste"
+
+getPalavra :: Jogo String
+getPalavra = do
+  gets palavra
+
+gameStart :: IO GameState
+gameStart = do
+  contents <- readFile "br-sem-acentos.txt"
+  let a = map countLetters (words contents)
+  print "Entre com a quantidade de letras"
+  input <- getLine
+  let max_size = read input :: Int
+  let b = listWordsOfSize a 5
+  let size = length b
+  randomNumber <- randomRIO (1, size)
+  let word = takeWordAt b randomNumber
+  return (GameState 5 5 word)
+
+
+
+-- >>> getPalavra (GameState 5 5 "TESTE")
+
+
+-- >>> 2 + 2
+
 
 gameLoop :: GameState -> IO ()
 gameLoop (GameState 0 _max_size s) = do
@@ -24,16 +65,3 @@ gameLoop (GameState l max_size s) = do
       print s
       putStrLn "Win"
     False -> gameLoop (GameState (l - 1) max_size s)
-
-gameStart :: IO GameState
-gameStart = do
-  contents <- readFile "br-sem-acentos.txt"
-  let a = map countLetters (words contents)
-  print "Entre com a quantidade de letras"
-  input <- getLine
-  let max_size = read input :: Int
-  let b = listWordsOfSize a max_size
-  let size = length b
-  randomNumber <- randomRIO (1, size)
-  let word = takeWordAt b randomNumber
-  return (GameState 5 max_size word)

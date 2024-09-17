@@ -67,12 +67,12 @@ stringFromGuess (Guess s) = s
 
 askUserForGuess :: Int -> IO Guess
 askUserForGuess
-  max_size = do 
+  max_size = do
     print ("Entre com uma palavra de " ++ show max_size ++ " letras")
     s <- getLine
     case guessFromString s max_size of
       Just n  -> return n
       Nothing -> do
-        print ("Quantidade errada de caracteres tente de novo.")
+        print "Quantidade errada de caracteres tente de novo."
         askUserForGuess max_size
 
