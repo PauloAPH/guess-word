@@ -18,7 +18,7 @@ main = do
   let gen = mkStdGen 2021
   gameState <- createGame wordSize gen contents
   play
-         (InWindow "Guess Word" (800, 800) (100, 100)) -- Window size and position
+         (InWindow "Guess Word" (800, 800) (400, 400)) -- Window size and position
          black                -- Background color
          30                   -- Frames per second
          gameState
@@ -27,6 +27,9 @@ main = do
          update                -- Update function (not used in this case)
 
 
--- https://hackage.haskell.org/package/base-4.20.0.1/docs/Data-String.html#v:words
--- https://www.ime.usp.br/~pf/dicios/
--- https://stackoverflow.com/questions/30740366/list-with-random-numbers-in-haskell
+{- Fontes
+https://hackage.haskell.org/package/base-4.20.0.1/docs/Data-String.html#v:words
+https://www.ime.usp.br/~pf/dicios/
+https://stackoverflow.com/questions/30740366/list-with-random-numbers-in-haskell
+https://hackage.haskell.org/package/random-1.2.1.2/docs/System-Random.html#t:StdGen
+-}

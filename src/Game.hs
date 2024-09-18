@@ -17,7 +17,6 @@ import GameGraphics
 import Graphics.Gloss
 import Graphics.Gloss.Interface.IO.Game
 import Data.Char (toUpper)
-import Data.List (elemIndices)
 import Data.Maybe (fromMaybe)
 import System.IO (hFlush, stdout)
 import System.Random (randomR)
