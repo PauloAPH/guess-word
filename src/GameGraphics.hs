@@ -8,7 +8,6 @@ where
 
 import Graphics.Gloss
 
-
 -- Draw a single square with a letter and its determined background color
 drawSquare :: Int -> Int -> Int -> Int -> (Maybe Char, Color) -> Picture
 drawSquare t ten rowIndex colIndex (maybeLetter, bgColor) =

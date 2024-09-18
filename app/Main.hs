@@ -2,21 +2,23 @@ module Main (main) where
 
 import Lib ()
 import Graphics.Gloss ( black, play, Display(InWindow) )
-import Game (GameState, criaJogo, handleInput, render, askSize)
+import Game (GameState, createGame, handleInput, render, askSize)
+import System.Random.Stateful (mkStdGen)
 
 update :: Float -> GameState -> GameState
-update _ gameState = gameState  
-  
+update _ gameState = gameState
+
 
 -- Main function to run the game
 main :: IO ()
 main = do
-  wordSizeInput <- askSize 
+  contents <- readFile "/home/paulo/prog_funcional/guess-word/br-sem-acentos.txt"
+  wordSizeInput <- askSize
   let wordSize = read wordSizeInput :: Int
-  contents <- readFile "/home/paulo/prog_funcional/guess-word/br-sem-acentos.txt"  
-  gameState <- criaJogo wordSize contents  
-  play 
-         (InWindow "Guess Word" (800, 600) (100, 100)) -- Window size and position
+  let gen = mkStdGen 2021
+  gameState <- createGame wordSize gen contents
+  play
+         (InWindow "Guess Word" (800, 800) (100, 100)) -- Window size and position
          black                -- Background color
          30                   -- Frames per second
          gameState

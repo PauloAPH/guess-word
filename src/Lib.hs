@@ -25,6 +25,3 @@ listWordsOfSize words_ n = filter (\(WordParam _ l) -> l == n) words_
 countLetters :: String -> WordParam
 countLetters s = WordParam s (length s)
 
-checkWin :: String -> Bool
-checkWin [] = True
-checkWin s = (head s == 'G') && checkWin (tail s)
