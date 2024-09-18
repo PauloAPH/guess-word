@@ -26,6 +26,7 @@ source-repository head
 library
   exposed-modules:
       Game
+      GameGraphics
       Lib
   other-modules:
       Paths_guess_word
@@ -37,6 +38,7 @@ library
   build-depends:
       HUnit
     , base >=4.7 && <5
+    , gloss
     , mtl
     , random
   default-language: Haskell2010
@@ -53,6 +55,7 @@ executable guess-word-exe
   build-depends:
       HUnit
     , base >=4.7 && <5
+    , gloss
     , guess-word
     , mtl
     , random
@@ -71,6 +74,7 @@ test-suite guess-word-test
   build-depends:
       HUnit
     , base >=4.7 && <5
+    , gloss
     , guess-word
     , mtl
     , random
