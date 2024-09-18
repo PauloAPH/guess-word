@@ -11,7 +11,7 @@ update _ gameState = gameState
 -- Main function to run the game
 main :: IO ()
 main = do
-  wordSizeInput <- askSize "Entre com o numero de letras: "
+  wordSizeInput <- askSize 
   let wordSize = read wordSizeInput :: Int
   contents <- readFile "/home/paulo/prog_funcional/guess-word/br-sem-acentos.txt"  
   gameState <- criaJogo wordSize contents  

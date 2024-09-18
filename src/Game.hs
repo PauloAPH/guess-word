@@ -21,14 +21,13 @@ import System.IO (hFlush, stdout)
 import Graphics.Gloss.Interface.IO.Game
 
 
--- Define the game state
 data GameState = GameState
-  { tentativas :: Int, -- Number of rows
-    tamanho_palavra :: Int, -- Number of squares per row
-    palavra :: String, -- The word to guess
-    guessedLetters :: [[Maybe Char]], -- Grid of guessed letters (Nothing for empty spaces)
-    turno :: Int, -- Index of the current row being guessed
-    gameWon :: Bool -- Flag to indicate if the game is won
+  { tentativas :: Int, 
+    tamanho_palavra :: Int, 
+    palavra :: String, 
+    guessedLetters :: [[Maybe Char]], 
+    turno :: Int, 
+    gameWon :: Bool 
   }
 
 criaJogo :: Int -> String -> IO GameState
@@ -36,15 +35,15 @@ criaJogo size contents = do
   let wordList = listWordsOfSize (map countLetters (words contents)) size
   return
     GameState
-      { tentativas = size + 1, -- Set attempts based on word list size
-        tamanho_palavra = size, -- Word size
-        palavra = map toUpper (takeWordAt wordList 3), -- The chosen word
-        guessedLetters = replicate (size + 1) (replicate size Nothing), -- Empty guesses grid
-        turno = 0, -- Start at turn 0
-        gameWon = False -- Game not won initially
+      { tentativas = size + 1, 
+        tamanho_palavra = size, 
+        palavra = map toUpper (takeWordAt wordList 3), 
+        guessedLetters = replicate (size + 1) (replicate size Nothing), 
+        turno = 0, 
+        gameWon = False 
       }
 
--- Rendering the game
+-- Renderiza a janela do jogo
 render :: GameState -> Picture
 render gameState =
   Pictures $ concatMap (drawRow gameState) [0 .. tentativas gameState - 1]
@@ -56,13 +55,15 @@ drawRow gameState rowIndex =
       rowColors = map (colorLetter gameState rowIndex) [0 .. tamanho_palavra gameState - 1]
    in zipWith (drawSquare (tamanho_palavra gameState) (tentativas gameState) rowIndex) [0 ..] (zip letters rowColors)
 
+
+-- Dado uma letra verifica se ela pertence a palavra na posição passada, na palavra mas em outra posição ou não
 letterInWord :: Char -> String -> Int -> Color
 letterInWord c w n
   | c `elem` w && c == w !! n = green
   | c `elem` w = yellow
   | otherwise = red
 
--- Determine the color for each letter in the row
+-- Define a cor de fundo da letra do chute
 colorLetter :: GameState -> Int -> Int -> Color
 colorLetter gameState rowIndex colIndex =
   let palavra_secreta = palavra gameState
@@ -70,13 +71,6 @@ colorLetter gameState rowIndex colIndex =
    in if rowIndex >= turno gameState -- Rows not guessed yet
         then makeColorI 200 200 200 255 -- Light gray for unguessed rows
         else letterInWord letter palavra_secreta colIndex
-
--- Check if the letter is in the target word but not in the correct position
-notCorrectPosition :: String -> Char -> Int -> Bool
-notCorrectPosition target letter colIndex =
-  let correctPositions = elemIndices letter target
-   in colIndex `notElem` correctPositions
-
 
 
 -- Processa entrada do usuario
@@ -116,14 +110,16 @@ checkGuess gameState =
       correct = currentGuess == palavra gameState
       nextRow = turno gameState + 1
    in if correct
-        then do gameState {gameWon = True}
+        then do 
+          gameState {turno = nextRow, gameWon = True}
         else
           if nextRow < tentativas gameState
             then gameState {turno = nextRow}
-            else gameState -- No more rows to guess, game is over
+            else gameState 
 
-askSize :: String -> IO String
-askSize prompt = do
-  putStr prompt
+-- Solicita ao usuario o tamanho da palavra
+askSize :: IO String
+askSize = do
+  putStr "Entre com o numero de letras: "
   hFlush stdout -- Ensure the prompt is displayed before reading input
   getLine
