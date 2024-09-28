@@ -8,7 +8,7 @@ module Game
     drawLetter,
     handleInput,
     askSize,
-    insertLetter,
+    insertTriedLetters,
     letterInWord
   )
 where
@@ -32,7 +32,7 @@ data GameState = GameState
     guessedLetters :: [[Maybe Char]],
     turn :: Int,
     gameWon :: Bool,
-    letters :: [Char]
+    triedLetters :: [Char]
   }
 
 -- Cria estancia de jogo com o tamanho da palavra selecionada
@@ -48,7 +48,7 @@ createGame size rng contents = do
         guessedLetters = replicate (size + 1) (replicate size Nothing),
         turn = 0,
         gameWon = False,
-        letters = []
+        triedLetters = []
       }
 
 -- Renderiza a janela do jogo
@@ -86,18 +86,21 @@ colorLetter gameState rowIndex colIndex =
         else letterInWord letter secretWord_secreta colIndex
 
 drawAlphabet :: GameState -> [Picture]
-drawAlphabet gameState = zipWith (drawSquare 8 (tries gameState + 1)  (tries gameState + 1)) [0 ..] (map (\x -> (Just x, letterInList gameState x)) ['A'..'H']) ++ zipWith (drawSquare 8 (tries gameState + 2)  (tries gameState + 2)) [0 ..] (map (\x -> (Just x, letterInList gameState x)) ['I'..'P']) ++ zipWith (drawSquare 8 (tries gameState + 3)  (tries gameState + 3)) [0 ..] (map (\x -> (Just x, letterInList gameState x)) ['Q'..'Z'])
+drawAlphabet gameState = zipWith (drawSquare 8 (tries gameState + 1)  (tries gameState + 1)) [0 ..] (map (\x -> (Just x, letterIntTriedLetters gameState x)) ['A'..'H']) ++ zipWith (drawSquare 8 (tries gameState + 2)  (tries gameState + 2)) [0 ..] (map (\x -> (Just x, letterIntTriedLetters gameState x)) ['I'..'P']) ++ zipWith (drawSquare 8 (tries gameState + 3)  (tries gameState + 3)) [0 ..] (map (\x -> (Just x, letterIntTriedLetters gameState x)) ['Q'..'Z'])
 
-letterInList :: GameState -> Char -> Color
-letterInList gameState letter = if letter `elem` letters gameState
-  then yellow
-  else red
 
-insertLetter :: Char -> [Char] -> [Char]
-insertLetter letter letters = 
-  if letter `elem` letters 
-    then letters 
-    else letters ++ [letter]
+-- Verifica se a letra esta na lista de letras ja tentadas
+letterIntTriedLetters :: GameState -> Char -> Color
+letterIntTriedLetters gameState letter = if letter `elem` triedLetters gameState
+  then azure
+  else cyan
+
+-- Insere letra na lista de letras ja tentadas
+insertTriedLetters :: Char -> [Char] -> [Char]
+insertTriedLetters newLetter triedLetters = 
+  if newLetter `elem` triedLetters
+    then triedLetters
+    else triedLetters ++ [newLetter]
 
 
 -- Processa entrada do usuario
@@ -106,9 +109,9 @@ handleInput (EventKey (Char key) Down _ _) gameState
   | gameWon gameState = gameState 
   | key `elem` ['a' .. 'z'] =
       let updatedLetters = fillNextEmpty (guessedLetters gameState) (toUpper key) (turn gameState)
-          originalLetters = letters gameState
-          newLetters = insertLetter (toUpper key) originalLetters
-          newState = gameState {guessedLetters = updatedLetters, letters = newLetters}
+          originalLetters = triedLetters gameState
+          newLetters = insertTriedLetters (toUpper key) originalLetters
+          newState = gameState {guessedLetters = updatedLetters, triedLetters = newLetters}
        in if isRowFull updatedLetters (turn gameState)
             then checkGuess newState
             else newState

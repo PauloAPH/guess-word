@@ -13,7 +13,7 @@ test2 :: Test
 test2 = TestCase (assertEqual "When the letter is not in the word" red (letterInWord 'b' "aeiou" 0))
 
 test3 :: Test
-test3 = TestCase (assertEqual "insert letter" ['a','b'] (insertLetter 'b' ['a']))
+test3 = TestCase (assertEqual "insert letter" ['a','b'] (insertTriedLetters 'b' ['a']))
 
 
 tests :: Test
