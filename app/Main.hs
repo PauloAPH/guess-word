@@ -4,6 +4,7 @@ import Lib ()
 import Graphics.Gloss ( black, play, Display(InWindow) )
 import Game (GameState, createGame, handleInput, render, askSize)
 import System.Random.Stateful (mkStdGen)
+import System.Random (randomIO)
 
 update :: Float -> GameState -> GameState
 update _ gameState = gameState
@@ -15,7 +16,8 @@ main = do
   contents <- readFile "/home/paulo/prog_funcional/guess-word/br-sem-acentos.txt"
   wordSizeInput <- askSize
   let wordSize = read wordSizeInput :: Int
-  let gen = mkStdGen 2021
+  seed <- randomIO :: IO Int
+  let gen = mkStdGen seed
   gameState <- createGame wordSize gen contents
   play
          (InWindow "Guess Word" (800, 800) (400, 400)) -- Window size and position
