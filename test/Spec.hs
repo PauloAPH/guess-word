@@ -12,9 +12,12 @@ test1 = TestCase (assertEqual "When the letter in the word" yellow (letterInWord
 test2 :: Test
 test2 = TestCase (assertEqual "When the letter is not in the word" red (letterInWord 'b' "aeiou" 0))
 
+test3 :: Test
+test3 = TestCase (assertEqual "insert letter" ['a','b'] (insertLetter 'b' ['a']))
+
 
 tests :: Test
-tests = TestList [TestLabel "test0" test0, TestLabel "test1" test1, TestLabel "test2" test2]
+tests = TestList [TestLabel "test0" test0, TestLabel "test1" test1, TestLabel "test2" test2,TestLabel "test3" test3]
 
 main :: IO Counts
 main = runTestTT tests

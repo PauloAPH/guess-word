@@ -7,7 +7,9 @@ module Game
     drawRectangle,
     drawLetter,
     handleInput,
-    askSize
+    askSize,
+    insertLetter,
+    letterInWord
   )
 where
 
@@ -29,7 +31,8 @@ data GameState = GameState
     secretWord :: String,
     guessedLetters :: [[Maybe Char]],
     turn :: Int,
-    gameWon :: Bool
+    gameWon :: Bool,
+    letters :: [Char]
   }
 
 -- Cria estancia de jogo com o tamanho da palavra selecionada
@@ -44,13 +47,17 @@ createGame size rng contents = do
         secretWord = map toUpper (takeWordAt wordList rn),
         guessedLetters = replicate (size + 1) (replicate size Nothing),
         turn = 0,
-        gameWon = False
+        gameWon = False,
+        letters = []
       }
 
 -- Renderiza a janela do jogo
 render :: GameState -> Picture
 render gameState =
-  Pictures $ concatMap (drawRow gameState) [0 .. tries gameState - 1]
+  Pictures (x ++ y) where 
+    x = concatMap (drawRow gameState) [0 .. tries gameState - 1]
+    y = drawAlphabet gameState
+  
 
 -- Draw a row of squares, with different colors based on the guessed letters
 drawRow :: GameState -> Int -> [Picture]
@@ -60,11 +67,13 @@ drawRow gameState currentTurn =
    in zipWith (drawSquare (wordSize gameState) (tries gameState) currentTurn) [0 ..] (zip letters rowColors)
 
 
+
+
 -- Dado uma letra verifica se ela pertence a secretWord na posição passada, na secretWord mas em outra posição ou não
 letterInWord :: Char -> String -> Int -> Color
-letterInWord c w n
-  | c `elem` w && c == w !! n = green
-  | c `elem` w = yellow
+letterInWord letter word n
+  | letter `elem` word && letter == word !! n = green
+  | letter `elem` word = yellow
   | otherwise = red
 
 -- Define a cor de fundo da letra do chute
@@ -72,18 +81,34 @@ colorLetter :: GameState -> Int -> Int -> Color
 colorLetter gameState rowIndex colIndex =
   let secretWord_secreta = secretWord gameState
       letter = fromMaybe '_' (guessedLetters gameState !! rowIndex !! colIndex)
-   in if rowIndex >= turn gameState -- Rows not guessed yet
-        then makeColorI 200 200 200 255 -- Light gray for unguessed rows
+   in if rowIndex >= turn gameState 
+        then makeColorI 200 200 200 255 
         else letterInWord letter secretWord_secreta colIndex
+
+drawAlphabet :: GameState -> [Picture]
+drawAlphabet gameState = zipWith (drawSquare 8 (tries gameState + 1)  (tries gameState + 1)) [0 ..] (map (\x -> (Just x, letterInList gameState x)) ['A'..'H']) ++ zipWith (drawSquare 8 (tries gameState + 2)  (tries gameState + 2)) [0 ..] (map (\x -> (Just x, letterInList gameState x)) ['I'..'P']) ++ zipWith (drawSquare 8 (tries gameState + 3)  (tries gameState + 3)) [0 ..] (map (\x -> (Just x, letterInList gameState x)) ['Q'..'Z'])
+
+letterInList :: GameState -> Char -> Color
+letterInList gameState letter = if letter `elem` letters gameState
+  then yellow
+  else red
+
+insertLetter :: Char -> [Char] -> [Char]
+insertLetter letter letters = 
+  if letter `elem` letters 
+    then letters 
+    else letters ++ [letter]
 
 
 -- Processa entrada do usuario
 handleInput :: Event -> GameState -> GameState
 handleInput (EventKey (Char key) Down _ _) gameState
-  | gameWon gameState = gameState -- If the game is already won, do nothing
+  | gameWon gameState = gameState 
   | key `elem` ['a' .. 'z'] =
       let updatedLetters = fillNextEmpty (guessedLetters gameState) (toUpper key) (turn gameState)
-          newState = gameState {guessedLetters = updatedLetters}
+          originalLetters = letters gameState
+          newLetters = insertLetter (toUpper key) originalLetters
+          newState = gameState {guessedLetters = updatedLetters, letters = newLetters}
        in if isRowFull updatedLetters (turn gameState)
             then checkGuess newState
             else newState
